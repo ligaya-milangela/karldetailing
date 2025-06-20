@@ -6,7 +6,7 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret123";
 
-Middleware: Authenticate using JWT token from cookies
+// Middleware: Authenticate using JWT token from cookies
 function auth(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ error: 'No token' });
