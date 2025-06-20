@@ -28,7 +28,7 @@ const app = express();
 
 app.use(cors({
   origin: ['http://localhost:3000', 
-          'https://kar-detailing-services.onrender.com'],
+          'https://kar-detailing-services.onrender.com', 'https://karldetailing.vercel.app'],
   credentials: true,
 }));
 app.use(express.json());
