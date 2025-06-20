@@ -7,16 +7,16 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "secret123";
 
 // Middleware: Authenticate using JWT token from cookies
-function auth(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: 'No token' });
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-}
+// function auth(req, res, next) {
+//   const token = req.cookies.token;
+//   if (!token) return res.status(401).json({ error: 'No token' });
+//   try {
+//     req.user = jwt.verify(token, JWT_SECRET);
+//     next();
+//   } catch (err) {
+//     res.status(401).json({ error: 'Invalid token' });
+//   }
+// } no need to use token. for now
 
 // Create a new booking (must be logged in)
 router.post('/', auth, async (req, res) => {
