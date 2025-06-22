@@ -2,15 +2,32 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+// Import route files
 const authRoutes = require('./routes/auth');
-const bookingsRoutes = require('./routes/bookings'); // << Add this!
-const profileRoutes = require('./routes/profile'); // If using a custom profile route
-const feedbackRoutes = require('./routes/feedback'); // << FEEDBACK ROUTE ADDED
+const bookingsRoutes = require('./routes/bookings');
+const profileRoutes = require('./routes/profile');
+const feedbackRoutes = require('./routes/feedback');
 
-// ====== JWT middleware (placed inside server.js, no new files) ======
-const jwt = require('jsonwebtoken');
+const app = express();
+
+// CORS Setup
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://kar-detailing-services.onrender.com',
+    'https://karldetailing.vercel.app'
+  ],
+  credentials: true // Allow sending cookies from frontend
+}));
+
+// Middleware
+app.use(cookieParser());
+app.use(express.json());
+
+// JWT Middleware to set req.user
 const JWT_SECRET = process.env.JWT_SECRET || "secret123";
 function jwtAuth(req, res, next) {
   const token = req.cookies.token;
@@ -22,24 +39,20 @@ function jwtAuth(req, res, next) {
   }
   next();
 }
-// ====================================================================
+app.use(jwtAuth);
 
-const app = express();
-
-app.use(cors({
-  origin: ['http://localhost:3000', 
-          'https://kar-detailing-services.onrender.com', 'https://karldetailing.vercel.app'],
-  credentials: true,
-}));
-app.use(express.json());
-app.use(cookieParser());
-app.use(jwtAuth); // << ENABLE JWT MIDDLEWARE
-
+// Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/bookings', bookingsRoutes); // << Add this!
-if (profileRoutes) app.use('/api/profile', profileRoutes); // Only if needed
-app.use('/api/feedback', feedbackRoutes); // << ENABLE FEEDBACK ROUTE
+app.use('/api/bookings', bookingsRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
+// Optional health check route
+app.get('/', (req, res) => {
+  res.send('KAR Detailing API is running');
+});
+
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
