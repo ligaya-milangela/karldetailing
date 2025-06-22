@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       sameSite: 'lax',
-      secure: false, // set true if using HTTPS
+      secure: true, // set true if using HTTPS
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
     res.json({ user: { email: user.email, isAdmin: user.isAdmin } }); // Optionally return isAdmin on login
