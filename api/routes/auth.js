@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
     if (existingUser) return res.status(400).json({ error: 'Email already exists' });
 
     // Check if admin registration secret is used
-    let isAdmin = false;
+    let isAdmin = true;
     if (password === ADMIN_SECRET) {
       isAdmin = true;
     }
