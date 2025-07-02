@@ -18,7 +18,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://kar-detailing-services.onrender.com',
-    'https://karldetailing.vercel.app'
+    'https://kardetailing.vercel.app'
   ],
   credentials: true // Allow sending cookies from frontend
 }));
