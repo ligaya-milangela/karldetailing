@@ -9,7 +9,7 @@ export default function ProfilePage() {
     name: "",
     contactNumber: "",
     address: "",
-    isAdmin: false,        // <-- include isAdmin
+    isAdmin: false,
   });
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ export default function ProfilePage() {
           name: data.name || "",
           contactNumber: data.contactNumber || "",
           address: data.address || "",
-          isAdmin: !!data.isAdmin, // <-- get isAdmin (boolean)
+          isAdmin: !!data.isAdmin,
         });
         setBookings(data.bookings || []);
       } catch (err) {
@@ -61,99 +61,170 @@ export default function ProfilePage() {
   if (!user) return <p>Please log in to view your profile.</p>;
 
   return (
-    <div style={{ maxWidth: 600, margin: "20px auto", fontFamily: "'Poppins', sans-serif" }}>
-      <h2 style={{ marginBottom: 20 }}>My Profile</h2>
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(to right, #f0f0f0, #e0e0e0)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "start",
+      padding: "40px 20px",
+      fontFamily: "'Poppins', sans-serif"
+    }}>
+      <div style={{
+        width: "100%",
+        maxWidth: "700px",
+        background: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "20px",
+        padding: "30px 40px",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)"
+      }}>
+        <h2 style={{ marginBottom: 10, fontWeight: 700 }}>My Profile</h2>
 
-      {/* --- ADMIN badge or User label --- */}
-      <div style={{ marginBottom: 18 }}>
-        {profile.isAdmin ? (
-          <span style={{
-            color: "#fff",
-            background: "#ffbf00",
-            display: "inline-block",
-            padding: "5px 18px",
-            borderRadius: "7px",
-            fontWeight: 700,
-            letterSpacing: "1px"
-          }}>
-            ADMIN ACCOUNT
-          </span>
+        {/* Admin/User Badge */}
+        <div style={{ marginBottom: 25 }}>
+          {profile.isAdmin ? (
+            <span style={{
+              background: "#FFD700",
+              color: "#000",
+              padding: "6px 16px",
+              fontWeight: 700,
+              borderRadius: "12px",
+              fontSize: "0.85rem"
+            }}>
+              ADMIN ACCOUNT
+            </span>
+          ) : (
+            <span style={{
+              background: "#aaa",
+              color: "#fff",
+              padding: "6px 16px",
+              fontWeight: 600,
+              borderRadius: "12px",
+              fontSize: "0.85rem"
+            }}>
+              USER ACCOUNT
+            </span>
+          )}
+        </div>
+
+        {/* Profile Form */}
+        {loading ? (
+          <p>Loading profile...</p>
         ) : (
-          <span style={{
-            color: "#fff",
-            background: "#888",
-            display: "inline-block",
-            padding: "5px 18px",
-            borderRadius: "7px",
-            fontWeight: 700,
-            letterSpacing: "1px"
-          }}>
-            USER ACCOUNT
-          </span>
+          <>
+            <form onSubmit={handleSubmit} style={{ marginBottom: 40 }}>
+              <div style={{ marginBottom: 18 }}>
+                <label style={{ fontWeight: 600 }}>Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={profile.name}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: 6,
+                    borderRadius: "10px",
+                    border: "1px solid #ccc",
+                    fontSize: "15px"
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 18 }}>
+                <label style={{ fontWeight: 600 }}>Contact Number</label>
+                <input
+                  type="tel"
+                  name="contactNumber"
+                  value={profile.contactNumber}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: 6,
+                    borderRadius: "10px",
+                    border: "1px solid #ccc",
+                    fontSize: "15px"
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 18 }}>
+                <label style={{ fontWeight: 600 }}>Address</label>
+                <textarea
+                  name="address"
+                  value={profile.address}
+                  onChange={handleChange}
+                  required
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginTop: 6,
+                    borderRadius: "10px",
+                    border: "1px solid #ccc",
+                    fontSize: "15px",
+                    resize: "none"
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  backgroundColor: "#000",
+                  color: "#fff",
+                  fontWeight: 600,
+                  borderRadius: "10px",
+                  border: "none",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  transition: "0.3s ease"
+                }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#222"}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#000"}
+              >
+                {saving ? "Saving..." : "Save Profile"}
+              </button>
+
+              {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
+              {success && <p style={{ color: "green", marginTop: 12 }}>{success}</p>}
+            </form>
+
+            {/* Booking History */}
+            <h3 style={{ marginBottom: 15 }}>🧾 Previous Bookings</h3>
+            {bookings.length === 0 ? (
+              <p>No previous bookings found.</p>
+            ) : (
+              <div style={{ display: "grid", gap: "15px" }}>
+                {bookings.map((b) => (
+                  <div key={b._id} style={{
+                    background: "#fdfdfd",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
+                    borderLeft: "6px solid #4caf50"
+                  }}>
+                    <div style={{ fontSize: "16px", fontWeight: "600" }}>
+                      {b.service || "Unknown"}
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#555", marginTop: 6 }}>
+                      {b.date ? new Date(b.date).toLocaleDateString() : "-"}<br />
+                      {b.time || "-"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
-
-      {loading ? (
-        <p>Loading profile...</p>
-      ) : (
-        <>
-          <form onSubmit={handleSubmit} style={{ marginBottom: 40 }}>
-            <label>
-              Name
-              <input
-                type="text"
-                name="name"
-                value={profile.name}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "8px", margin: "8px 0" }}
-                required
-              />
-            </label>
-            <label>
-              Contact Number
-              <input
-                type="tel"
-                name="contactNumber"
-                value={profile.contactNumber}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "8px", margin: "8px 0" }}
-                required
-              />
-            </label>
-            <label>
-              Address
-              <textarea
-                name="address"
-                value={profile.address}
-                onChange={handleChange}
-                style={{ width: "100%", padding: "8px", margin: "8px 0" }}
-                rows={3}
-                required
-              />
-            </label>
-            <button type="submit" disabled={saving} style={{ padding: "10px 20px", cursor: "pointer" }}>
-              {saving ? "Saving..." : "Save Profile"}
-            </button>
-            {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
-            {success && <p style={{ color: "green", marginTop: 10 }}>{success}</p>}
-          </form>
-
-          <h3>Previous Bookings</h3>
-          {bookings.length === 0 ? (
-            <p>No previous bookings found.</p>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {bookings.map((b) => (
-                <li key={b._id} style={{ marginBottom: 20, padding: "12px", background: "#f6f6f6", borderRadius: "8px" }}>
-                  <strong>Service:</strong> {b.service || "Unknown"} <br />
-                  <strong>Date:</strong> {b.date ? new Date(b.date).toLocaleDateString() : "-"} <br />
-                  <strong>Time:</strong> {b.time || "-"}
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
     </div>
   );
 }

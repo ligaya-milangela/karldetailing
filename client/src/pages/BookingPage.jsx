@@ -6,58 +6,56 @@ import { useLocation } from "react-router-dom";
 const styles = {
   body: {
     minHeight: "100vh",
-    background: "#fff",
+    background: "#f2f2f2",
     fontFamily: "'Poppins', sans-serif",
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    padding: "20px",
   },
   container: {
-    background: "#f6f6f6",
-    borderRadius: "18px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-    padding: "40px 30px",
-    minWidth: "350px",
+    background: "#f4f4f4",
+    borderRadius: "30px",
+    boxShadow: "0px 6px 20px rgba(0, 0, 0, 0.1)",
+    padding: "30px 20px",
+    width: "100%",
+    maxWidth: "420px",
     textAlign: "center",
   },
   title: {
-    margin: 0,
+    fontSize: "1.8rem",
+    fontWeight: "700",
     marginBottom: "20px",
-    fontSize: "2rem",
     color: "#000",
-    letterSpacing: "2px",
-    fontWeight: "bold",
   },
   input: {
     width: "100%",
-    padding: "13px",
-    margin: "12px 0",
+    padding: "12px",
+    margin: "8px 0",
+    borderRadius: "12px",
     border: "1px solid #ccc",
-    borderRadius: "9px",
-    fontSize: "16px",
+    fontSize: "15px",
     fontFamily: "'Poppins', sans-serif",
     outline: "none",
+    boxSizing: "border-box",
   },
   button: {
+    marginTop: "15px",
     width: "100%",
-    background: "#000",
-    color: "#fff",
     border: "none",
-    borderRadius: "9px",
-    padding: "14px",
-    fontSize: "17px",
-    fontWeight: 700,
-    letterSpacing: "1px",
-    fontFamily: "'Poppins', sans-serif",
+    padding: "13px",
+    borderRadius: "20px",
+    fontWeight: "700",
+    fontSize: "16px",
     cursor: "pointer",
-    marginTop: "10px",
+    transition: "background-color 0.3s ease",
+    fontFamily: "'Poppins', sans-serif",
   },
   error: {
     color: "red",
     marginTop: "10px",
     fontWeight: "bold",
-  }
+  },
 };
 
 const timeOptions = [
@@ -79,7 +77,6 @@ const serviceTypeLabels = {
 };
 
 function getDropdownOptions(suggestion) {
-  // If suggestion exists, only return the matched one.
   if (suggestion) {
     const label =
       `${severityLabels[suggestion.category]} (${serviceTypeLabels[suggestion.serviceType]})`;
@@ -92,7 +89,6 @@ function getDropdownOptions(suggestion) {
       }
     ];
   }
-  // Otherwise return all possible combinations.
   const allOptions = [];
   for (const [catKey, catLabel] of Object.entries(severityLabels)) {
     for (const [typeKey, typeLabel] of Object.entries(serviceTypeLabels)) {
@@ -123,8 +119,8 @@ export default function BookingPage() {
   const [price, setPrice] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [hovered, setHovered] = useState(false); // For button hover effect
 
-  // Autofill from profile using email as query param
   useEffect(() => {
     async function fetchProfile() {
       if (!user || !user.email) return;
@@ -140,7 +136,6 @@ export default function BookingPage() {
     fetchProfile();
   }, [user]);
 
-  // Handle suggestion (from self-assess)
   useEffect(() => {
     if (suggestion) {
       const matchedLabel =
@@ -165,7 +160,6 @@ export default function BookingPage() {
     try {
       await api.post("/bookings", form);
       setSuccess("Booking submitted!");
-      // Reset form but preserve autofilled data
       if (user && user.email) {
         const { data } = await api.get(`/profile?email=${encodeURIComponent(user.email)}`);
         setForm(f => ({
@@ -193,8 +187,13 @@ export default function BookingPage() {
     }
   }
 
-  // Dropdown options
   const serviceOptions = getDropdownOptions(suggestion);
+
+  const buttonStyle = {
+    ...styles.button,
+    backgroundColor: hovered ? "#222" : "#000",
+    color: "#fff",
+  };
 
   return (
     <div style={styles.body}>
@@ -245,14 +244,13 @@ export default function BookingPage() {
             value={form.service}
             onChange={handleChange}
             required
-            disabled={!!suggestion} // Disable when suggested to prevent changing
+            disabled={!!suggestion}
           >
             <option value="">Select Service Category</option>
             {serviceOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          {/* Show price if exists */}
           {price && (
             <div style={{ color: "#006622", fontWeight: 600, margin: "12px 0" }}>
               Estimated Price: {price}
@@ -266,7 +264,14 @@ export default function BookingPage() {
             value={form.notes}
             onChange={handleChange}
           />
-          <button style={styles.button} type="submit">Submit Booking</button>
+          <button
+            style={buttonStyle}
+            type="submit"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            Submit Booking
+          </button>
           {error && <div style={styles.error}>{error}</div>}
           {success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
         </form>

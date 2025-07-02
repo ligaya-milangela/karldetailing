@@ -52,64 +52,143 @@ function FeedbackPage() {
   };
 
   return (
-    <div style={{ maxWidth: 480, margin: "0 auto" }}>
-      <h2>Feedback</h2>
-      {user && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
-          <div>
-            <label>Rating: </label>
-            <select value={rating} onChange={e => setRating(Number(e.target.value))}>
-              {[1,2,3,4,5].map(n =>
-                <option key={n} value={n}>{n} Star{n > 1 && "s"}</option>
-              )}
-            </select>
-          </div>
-          <div>
-            <label>Feedback: </label>
-            <textarea
-              value={comment}
-              onChange={e => setComment(e.target.value)}
-              maxLength={200}
-              rows={3}
-              required
-              style={{ width: "100%" }}
-            />
-            <div style={{ fontSize: 12 }}>{comment.length}/200</div>
-          </div>
-          <button type="submit">Submit</button>
-          {error && <div style={{ color: "red" }}>{error}</div>}
-          {success && <div style={{ color: "green" }}>{success}</div>}
-        </form>
-      )}
+    <div style={{
+      fontFamily: "'Poppins', sans-serif",
+      backgroundColor: "#f2f2f2",
+      minHeight: "100vh",
+      padding: "30px 20px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center"
+    }}>
+      <div style={{
+        maxWidth: "600px",
+        width: "100%",
+        background: "#fff",
+        padding: "30px 25px",
+        borderRadius: "20px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
+      }}>
+        <h2 style={{
+          textAlign: "center",
+          marginBottom: "25px",
+          fontWeight: "700",
+          fontSize: "1.8rem"
+        }}>Feedback</h2>
 
-      <h3>All Feedback</h3>
-      {feedbacks.length === 0 ? <div>No feedback yet.</div> :
-        feedbacks.map(f => (
-          <div key={f._id} style={{
-            border: "1px solid #eee",
-            borderRadius: 8,
-            padding: 12,
-            marginBottom: 12,
-            background: "#f9f9f9"
-          }}>
-            <div>
-              <b>{f.name || "Anonymous"}</b> - {f.rating}⭐
-            </div>
-            <div style={{ margin: "8px 0" }}>{f.comment}</div>
-            <div style={{ fontSize: 12, color: "#999" }}>{(new Date(f.createdAt)).toLocaleString()}</div>
-            {user?.isAdmin && (
-              <button
-                onClick={() => handleDelete(f._id)}
+        {user && (
+          <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 15 }}>
+              <label style={{ fontWeight: "600" }}>Rating:</label>
+              <select
+                value={rating}
+                onChange={e => setRating(Number(e.target.value))}
                 style={{
-                  color: "white", background: "crimson",
-                  border: "none", borderRadius: 5, padding: "4px 12px", marginTop: 6, cursor: "pointer"
-                }}>
-                Delete
-              </button>
-            )}
-          </div>
-        ))
-      }
+                  marginLeft: 10,
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                  fontSize: "15px"
+                }}
+              >
+                {[1, 2, 3, 4, 5].map(n =>
+                  <option key={n} value={n}>{n} Star{n > 1 && "s"}</option>
+                )}
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 15 }}>
+              <label style={{ fontWeight: "600" }}>Feedback:</label>
+              <textarea
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+                maxLength={200}
+                rows={4}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid #ccc",
+                  resize: "none",
+                  fontSize: "14px",
+                  marginTop: 6
+                }}
+              />
+              <div style={{ fontSize: "12px", textAlign: "right", color: "#777" }}>
+                {comment.length}/200
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "12px",
+                backgroundColor: "#000",
+                color: "#fff",
+                fontWeight: "600",
+                fontSize: "15px",
+                borderRadius: "12px",
+                border: "none",
+                cursor: "pointer",
+                transition: "background 0.3s ease"
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = "#222"}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = "#000"}
+            >
+              Submit Feedback
+            </button>
+
+            {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
+            {success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
+          </form>
+        )}
+
+        <h3 style={{ marginTop: 30, marginBottom: 15 }}>All Feedback</h3>
+        {feedbacks.length === 0 ? (
+          <div style={{ textAlign: "center", color: "#777" }}>No feedback yet.</div>
+        ) : (
+          feedbacks.map(f => (
+            <div key={f._id} style={{
+              background: "#f9f9f9",
+              borderRadius: "15px",
+              padding: "15px 20px",
+              marginBottom: "15px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.06)"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <strong>{f.name || "Anonymous"}</strong>
+                <span style={{ color: "#FFD700" }}>{'⭐'.repeat(f.rating)}</span>
+              </div>
+              <div style={{ marginTop: "8px", fontSize: "15px" }}>{f.comment}</div>
+              <div style={{
+                fontSize: "12px",
+                color: "#999",
+                marginTop: "8px"
+              }}>{(new Date(f.createdAt)).toLocaleString()}</div>
+
+              {user?.isAdmin && (
+                <button
+                  onClick={() => handleDelete(f._id)}
+                  style={{
+                    marginTop: 10,
+                    background: "crimson",
+                    color: "white",
+                    border: "none",
+                    padding: "6px 14px",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    float: "right"
+                  }}>
+                  Delete
+                </button>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
